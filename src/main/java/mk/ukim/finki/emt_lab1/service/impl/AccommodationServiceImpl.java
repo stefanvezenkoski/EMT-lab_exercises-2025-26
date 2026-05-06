@@ -128,4 +128,17 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Override
+    public List<Accommodation> findByUserId(Long userId) {
+        return accommodationRepository.findByRentedById(userId);
+    }
+
+    @Override
+    public Accommodation rentForUser(Long accommodationId, User user) {
+        Accommodation acc = accommodationRepository.findById(accommodationId)
+                .orElseThrow(() -> new RuntimeException("Accommodation not found"));
+        acc.setRented(true);
+        acc.setRentedBy(user);
+        return accommodationRepository.save(acc);
+    }
 }

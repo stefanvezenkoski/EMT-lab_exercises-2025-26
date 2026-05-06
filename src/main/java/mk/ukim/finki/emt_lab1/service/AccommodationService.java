@@ -5,6 +5,7 @@ import mk.ukim.finki.emt_lab1.dto.AccommodationSearchDTO;
 import mk.ukim.finki.emt_lab1.model.Accommodation;
 import mk.ukim.finki.emt_lab1.model.AccommodationExtendedProjection;
 import mk.ukim.finki.emt_lab1.model.AccommodationShortProjection;
+import mk.ukim.finki.emt_lab1.model.User;
 import mk.ukim.finki.emt_lab1.model.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,5 +25,7 @@ public interface AccommodationService {
     List<Accommodation> findAllWithHostAndCountry();
     List<AccommodationShortProjection> findAllShort();
     List<AccommodationExtendedProjection> findAllExtended();
+    List<Accommodation> findByUserId(Long userId);
+    Accommodation rentForUser(Long accommodationId, User user);
 
 }

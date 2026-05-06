@@ -8,8 +8,14 @@ public interface AccommodationExtendedProjection {
     String getName();
     Category getCategory();
     Integer getNumRooms();
+
+    @Value("#{target.host.name}")
     String getHostName();
+
+    @Value("#{target.host.surname}")
     String getHostSurname();
+
+    @Value("#{target.host.country.name}")
     String getCountryName();
 
     @Value("#{target.host.name + ' ' + target.host.surname}")

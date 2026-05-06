@@ -17,6 +17,9 @@ import java.util.Optional;
 
 @Repository
 public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
+    List<Accommodation> findByRentedById(Long userId);
+
+
     Page<Accommodation> findByCategoryAndHost_Country_NameAndNumRoomsGreaterThanAndRented(
             Category category, String countryName, Integer minRooms, Boolean rented, Pageable pageable);
 
@@ -40,8 +43,11 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("SELECT a FROM Accommodation a JOIN FETCH a.host h JOIN FETCH h.country")
     List<Accommodation> findAllWithHostAndCountry();
 
+    @Query("SELECT a FROM Accommodation a")
     List<AccommodationShortProjection> findAllShort();
 
+    @Query("SELECT a FROM Accommodation a")
     List<AccommodationExtendedProjection> findAllExtended();
+
 
 }

@@ -6,7 +6,9 @@ import mk.ukim.finki.emt_lab1.dto.AccommodationSearchDTO;
 import mk.ukim.finki.emt_lab1.model.Accommodation;
 import mk.ukim.finki.emt_lab1.model.AccommodationExtendedProjection;
 import mk.ukim.finki.emt_lab1.model.AccommodationShortProjection;
+import mk.ukim.finki.emt_lab1.model.User;
 import mk.ukim.finki.emt_lab1.model.enums.Category;
+import mk.ukim.finki.emt_lab1.repository.UserRepository;
 import mk.ukim.finki.emt_lab1.service.AccommodationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +26,25 @@ import java.util.List;
 public class AccommodationController {
 
     private final AccommodationService accommodationService;
+    private final UserRepository userRepository;
 
-    public AccommodationController(AccommodationService accommodationService) {
+    public AccommodationController(AccommodationService accommodationService,
+                                   UserRepository userRepository) {
         this.accommodationService = accommodationService;
+        this.userRepository = userRepository;
+    }
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    // ⚠️ ОВОЈ МЕТОД МОРА ДА БИДЕ ПРВ ЗА ДА НЕ СЕ МЕША СО /{id}
+    @GetMapping("/my-accommodations")
+    public ResponseEntity<List<Accommodation>> getMyAccommodations() {
+        User currentUser = getCurrentUser();
+        return ResponseEntity.ok(accommodationService.findByUserId(currentUser.getId()));
     }
 
     @GetMapping
@@ -60,8 +79,9 @@ public class AccommodationController {
     }
 
     @PatchMapping("/{id}/rent")
-    public ResponseEntity<Accommodation> markAsRented(@PathVariable Long id) {
-        return ResponseEntity.ok(accommodationService.markAsRented(id));
+    public ResponseEntity<Accommodation> rentAccommodation(@PathVariable Long id) {
+        User currentUser = getCurrentUser();
+        return ResponseEntity.ok(accommodationService.rentForUser(id, currentUser));
     }
 
     @GetMapping("/search")
@@ -92,5 +112,4 @@ public class AccommodationController {
     public ResponseEntity<List<AccommodationExtendedProjection>> findAllExtended() {
         return ResponseEntity.ok(accommodationService.findAllExtended());
     }
-
 }
