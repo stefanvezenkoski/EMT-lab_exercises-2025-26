@@ -24,3 +24,10 @@ CREATE TABLE accommodation (
                                host_id    BIGINT REFERENCES host(id),
                                rented     BOOLEAN      NOT NULL DEFAULT FALSE
 );
+
+CREATE TABLE activity_log (
+                              id BIGSERIAL PRIMARY KEY,
+                              accommodation_name VARCHAR(200) NOT NULL,
+                              event_time TIMESTAMP NOT NULL,
+                              event_type VARCHAR(50) NOT NULL
+);
